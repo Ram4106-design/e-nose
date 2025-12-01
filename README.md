@@ -132,7 +132,7 @@ enose/
 ### Backend (`backend/src/main.rs`)
 - TCP Port: `8082`
 - Serial Port: Auto-detect Arduino
-- Baud Rate: `115200`
+- Baud Rate: `9600`
 
 ### Frontend (`frontend/config.py`)
 - Backend Host: `127.0.0.1`
