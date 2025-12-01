@@ -158,7 +158,9 @@ This project is licensed under the MIT License.
 
 ## 👥 Authors
 
-- Your Name - Initial work
+- Sadrakh Ram Loudan Saputra - Institut Teknologi Sepuluh Nopember
+- Hakan Maulana Yazid Zidane - Institut Teknologi Sepuluh Nopember
+- Melodya Sembiring - Institut Teknologi Sepuluh Nopember 
 
 ## 🙏 Acknowledgments
 
