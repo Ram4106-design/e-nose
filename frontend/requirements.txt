@@ -1,0 +1,17 @@
+# E-Nose Dashboard Requirements
+# Python dependencies untuk frontend
+
+# GUI Framework
+PyQt6==6.6.1
+pyqtgraph==0.13.3
+qasync==0.27.1
+
+# Edge Impulse
+edge-impulse-linux==1.0.14
+
+# HTTP Requests (untuk upload ke Edge Impulse)
+requests==2.31.0
+
+# Optional: untuk analisis data
+numpy==1.26.2
+pandas==2.1.4

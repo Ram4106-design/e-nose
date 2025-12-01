@@ -1,0 +1,21 @@
+# E-Nose Backend Filter Configuration
+
+# Moving average window size (number of samples to average)
+window_size = 5
+
+# Sinusoidal modulation settings
+# Formula: output = input × (1 + sine_amplitude × sin(2π × sine_frequency × t))
+
+# Enable/disable sinusoidal modulation
+sine_enabled = true
+
+# Amplitude of sine wave (0.0 to 1.0)
+# 0.15 = 15% variation (recommended for subtle effect)
+# 0.30 = 30% variation (more visible oscillation)
+sine_amplitude = 0.15
+
+# Frequency in Hz (cycles per second)
+# 0.5 = 1 complete wave every 2 seconds
+# 1.0 = 1 complete wave every 1 second
+# 0.2 = 1 complete wave every 5 seconds
+sine_frequency = 0.5
