@@ -1,62 +1,63 @@
 # 🔬 E-NOSE Real-Time Monitoring System
 
-Sistem Electronic Nose (E-Nose) untuk monitoring kualitas udara secara real-time dengan integrasi Edge Impulse untuk machine learning. Proyek ini menggabungkan performa tinggi Rust di backend dan kemudahan Python untuk antarmuka pengguna (GUI).
+An advanced Electronic Nose (E-Nose) system designed for real-time air quality monitoring, featuring seamless integration with Edge Impulse for machine learning applications. This project leverages the high-performance capabilities of **Rust** for the backend and the versatility of **Python (PyQt6)** for a modern, responsive user interface.
 
 ---
 
-## 📋 Fitur Utama
+## 📋 Key Features
 
 ### Backend (Rust)
-- ⚡ **High-performance TCP Server**: Menangani aliran data sensor dengan latensi sangat rendah.
-- 🔄 **FSM Control**: Mengontrol siklus sampling 5-tahap (PRE_COND → RAMP_UP → HOLD → PURGE → RECOVERY).
-- 📡 **Serial Communication**: Komunikasi stabil dengan Arduino.
+- **⚡ High-Performance TCP Server**: Efficiently handles high-frequency sensor data streams with minimal latency.
+- **🔄 Finite State Machine (FSM)**: Precisely controls the 5-stage sampling cycle (PRE_COND → RAMP_UP → HOLD → PURGE → RECOVERY) for consistent data acquisition.
+- **📡 Robust Serial Communication**: Ensures stable and reliable data transmission from the Arduino microcontroller.
 
 ### Frontend (Python/PyQt6)
-- 🎨 **Modern UI**: Antarmuka gelap (dark mode) dengan aksen neon yang futuristik.
-- 📈 **Real-time Graph**: Visualisasi 7 sensor sekaligus secara langsung.
-- ☁️ **Edge Impulse Integration**: Upload data otomatis untuk pelatihan model AI.
-- 💾 **CSV Export**: Simpan data lokal untuk analisis lebih lanjut.
+- **🎨 Modern Aesthetic**: A sleek, dark-themed user interface with neon accents for a premium look and feel.
+- **📈 Real-Time Visualization**: Live plotting of data from 7 different sensors simultaneously.
+- **☁️ Edge Impulse Integration**: Automatic and secure data uploading to Edge Impulse for training machine learning models.
+- **💾 Data Management**: Easy export of sensor data to CSV format for offline analysis.
 
 ---
 
-## 🛠️ Persiapan (Prerequisites)
+## 🛠️ Prerequisites
 
-Sebelum memulai, pastikan Anda telah menginstal software berikut:
+Before you begin, ensure your system meets the following requirements:
 
-1.  **Rust**: Untuk menjalankan backend.
-    - Download: [rustup.rs](https://rustup.rs/)
-2.  **Python 3.8+**: Untuk menjalankan frontend.
-    - Download: [python.org](https://www.python.org/)
-3.  **Arduino IDE**: Untuk upload kode ke mikrokontroler.
-    - Download: [arduino.cc](https://www.arduino.cc/en/software)
-4.  **Git**: Untuk mengunduh kode program.
-    - Download: [git-scm.com](https://git-scm.com/)
+1.  **Rust Toolchain**: Required to compile and run the backend server.
+    - [Download & Install Rust](https://rustup.rs/)
+2.  **Python 3.8+**: Required to run the graphical user interface (GUI).
+    - [Download & Install Python](https://www.python.org/downloads/)
+3.  **Arduino IDE**: Required to upload the firmware to your microcontroller.
+    - [Download Arduino IDE](https://www.arduino.cc/en/software)
+4.  **Git**: Required to clone the project repository.
+    - [Download Git](https://git-scm.com/downloads)
+5.  **Edge Impulse Account** (Optional): Required if you plan to use the machine learning features.
 
 ---
 
-## 📥 Instalasi
+## 📥 Installation Guide
 
-Ikuti langkah-langkah ini untuk menyiapkan proyek di komputer Anda:
+Follow these steps to set up the project on your local machine:
 
-### 1. Clone Repository
-Buka terminal (Command Prompt / PowerShell) dan jalankan perintah berikut:
+### 1. Clone the Repository
+Open your terminal (Command Prompt, PowerShell, or Terminal) and run:
 
 ```bash
 git clone https://github.com/Ram4106-design/e-nose.git
 cd e-nose
 ```
 
-### 2. Setup Backend (Rust)
-Masuk ke folder backend dan build programnya:
+### 2. Setup the Backend (Rust)
+Navigate to the backend directory and build the project in release mode for optimal performance:
 
 ```bash
 cd backend
 cargo build --release
 ```
-*Tunggu hingga proses compile selesai (mungkin memakan waktu beberapa menit untuk pertama kali).*
+*Note: The first build may take a few minutes as it downloads and compiles dependencies.*
 
-### 3. Setup Frontend (Python)
-Buka terminal baru, masuk ke folder frontend, dan install library yang dibutuhkan:
+### 3. Setup the Frontend (Python)
+Open a **new** terminal window, navigate to the frontend directory, and install the required Python libraries:
 
 ```bash
 cd frontend
@@ -65,88 +66,104 @@ pip install -r requirements.txt
 
 ---
 
-## 🚀 Cara Menjalankan (How to Run)
+## 🚀 How to Run the System
 
-Untuk menjalankan sistem, Anda perlu membuka 3 komponen secara berurutan:
+To operate the E-Nose system, you must start the components in the specific order outlined below.
 
-### Langkah 1: Upload Kode Arduino
-1.  Buka file `arduino_enose_persistent.ino` menggunakan Arduino IDE.
-2.  Hubungkan Arduino ke komputer via USB.
-3.  Pilih Board dan Port yang sesuai di Arduino IDE.
-4.  Klik tombol **Upload** (➡️).
-5.  Pastikan upload sukses ("Done uploading").
+### Step 1: Flash the Arduino Firmware
+1.  Connect your Arduino board to your computer via USB.
+2.  Open the file `arduino_enose_persistent.ino` in the **Arduino IDE**.
+3.  Select your specific board model and the correct COM port under **Tools > Board** and **Tools > Port**.
+4.  Click the **Upload** button (➡️ arrow icon).
+5.  Wait for the "Done uploading" message.
+6.  **Important**: Close the Serial Monitor in Arduino IDE if it is open, as it will block the backend from connecting.
 
-### Langkah 2: Jalankan Backend (Server)
-Backend bertugas membaca data dari Arduino dan mengirimkannya ke Frontend.
+### Step 2: Start the Backend Server
+The backend acts as a bridge between the Arduino and the Frontend.
 
-1.  Buka terminal di folder `backend`.
-2.  Jalankan perintah:
+1.  Open a terminal in the `backend` directory.
+2.  Run the server:
     ```bash
     cargo run --release
     ```
-3.  Anda akan melihat pesan: `Server listening on 127.0.0.1:8082`.
-4.  **Biarkan terminal ini tetap terbuka.**
+3.  You should see a message indicating the server is listening (e.g., `Server listening on 127.0.0.1:8082`).
+4.  **Keep this terminal window open.** Closing it will stop the server.
 
-### Langkah 3: Jalankan Frontend (Aplikasi)
-Frontend adalah tampilan antarmuka untuk mengontrol alat.
-
-1.  Buka terminal **baru** di folder `frontend`.
-2.  Jalankan perintah:
+### Step 3: Launch the Frontend Application
+1.  Open a **new** terminal in the `frontend` directory.
+2.  Launch the application:
     ```bash
     python main.py
     ```
-3.  Jendela aplikasi E-Nose akan muncul.
+3.  The E-Nose Dashboard window should appear on your screen.
 
 ---
 
-## 📖 Panduan Penggunaan (User Guide)
+## 📖 Detailed User Guide
 
-Berikut adalah langkah-langkah detail untuk menggunakan aplikasi:
+### A. Verifying Connection
+- Look at the status indicator in the bottom-left corner of the application window.
+- It should display a green **"Connected"** status.
+- If it says "Disconnected" (Red), ensure the Backend server (Step 2) is running and no other application is using the Arduino's serial port.
 
-### A. Menghubungkan ke Sistem
-1.  Saat aplikasi terbuka, status di pojok kiri bawah harusnya **"Connected"** (Hijau).
-2.  Jika **"Disconnected"**, pastikan Backend (Langkah 2) sudah berjalan.
+### B. Performing a Sampling Cycle
+The system uses a standardized 5-stage sampling process to ensure data consistency.
 
-### B. Melakukan Sampling (Pengambilan Data)
-1.  Siapkan sampel aroma di dekat sensor.
-2.  Klik tombol **▶ START SAMPLING**.
-3.  Sistem akan berjalan otomatis melalui 5 tahapan:
-    - **PRE_COND**: Pemanasan sensor.
-    - **RAMP_UP**: Persiapan naik.
-    - **HOLD**: Pengambilan data utama (Penting!).
-    - **PURGE**: Pembersihan sensor.
-    - **RECOVERY**: Pendinginan.
-4.  Tunggu hingga progress bar mencapai 100% dan status kembali ke "IDLE".
+1.  **Prepare Sample**: Place the substance you wish to analyze near the sensor array.
+2.  **Start**: Click the large **▶ START SAMPLING** button.
+3.  **Monitor Progress**: Watch the progress bar and status text. The system will automatically cycle through:
+    - **PRE_COND**: Sensor pre-heating to baseline temperature.
+    - **RAMP_UP**: Increasing sensor voltage/sensitivity.
+    - **HOLD**: The critical data collection phase where the sensor is most stable.
+    - **PURGE**: Cleaning the sensor chamber with fresh air.
+    - **RECOVERY**: Allowing sensors to return to baseline resistance.
+4.  **Completion**: Wait until the cycle finishes and the status returns to "IDLE".
 
-### C. Upload ke Edge Impulse (Otomatis/Manual)
-Fitur ini memungkinkan Anda mengirim data langsung ke cloud Edge Impulse untuk machine learning.
+### C. Uploading Data to Edge Impulse
+This feature allows you to build a dataset for machine learning classification.
 
-1.  Di panel kanan bawah ("💾 Export & Model"), isi data berikut:
-    - **API Key**: Kunci API dari proyek Edge Impulse Anda.
-    - **Project ID**: ID Proyek Edge Impulse.
-    - **Label**: Nama label untuk data ini (contoh: `kopi`, `teh`, `alkohol`).
-2.  Jika ingin upload otomatis setiap selesai sampling, biarkan tombol upload manual. Aplikasi akan otomatis mengupload jika API Key terisi.
-3.  Untuk upload manual data terakhir, klik tombol **📤 UPLOAD TO EI**.
+1.  **Configure Credentials**:
+    - Locate the "💾 Export & Model" panel on the right side.
+    - **API Key**: Paste your Edge Impulse project's API Key (found in Dashboard > Keys).
+    - **Project ID**: Enter your Project ID (found in Dashboard).
+    - **Label**: Enter a label for the current sample (e.g., `coffee`, `spoiled_milk`, `ambient`).
+2.  **Automatic Upload**:
+    - If the API Key is provided, the system is designed to automatically upload data at the end of a sampling cycle.
+3.  **Manual Upload**:
+    - If you want to re-upload the last collected sample, click the **📤 UPLOAD TO EI** button.
+    - Check the application logs (terminal) or your Edge Impulse dashboard to confirm success.
 
-### D. Menyimpan Data ke CSV
-1.  Setelah sampling selesai, klik tombol **💾 SAVE CSV**.
-2.  File akan tersimpan di folder `csv/` dengan nama format tanggal dan waktu.
-
----
-
-## 🔧 Troubleshooting (Pemecahan Masalah)
-
-- **Error: "Serial port not found" di Backend**
-  - Pastikan Arduino tercolok dengan benar.
-  - Tutup Arduino IDE Serial Monitor jika sedang terbuka (Port tidak bisa dipakai 2 aplikasi sekaligus).
-
-- **Error: "Connection Refused" di Frontend**
-  - Pastikan Backend (Rust) sudah berjalan (`cargo run --release`).
-  - Cek apakah firewall memblokir port 8082.
+### D. Exporting Data Locally
+1.  After a sampling cycle is complete, click the **💾 SAVE CSV** button.
+2.  The data will be saved as a `.csv` file in the `csv/` directory within your project folder.
+3.  The filename will include the current timestamp for easy organization.
 
 ---
 
-## 👥 Penulis
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**1. "Serial port not found" (Backend)**
+- **Cause**: Arduino is not connected or the port is in use.
+- **Fix**: Reconnect the USB cable. Ensure Arduino IDE Serial Monitor is closed. Restart the backend.
+
+**2. "Connection Refused" (Frontend)**
+- **Cause**: The Rust backend server is not running.
+- **Fix**: Open the backend terminal and ensure `cargo run --release` is executing and shows "Listening".
+
+**3. "Upload Failed" (Edge Impulse)**
+- **Cause**: Incorrect API Key or Project ID.
+- **Fix**: Double-check your credentials in the "Export & Model" panel. Ensure you have an active internet connection.
+
+---
+
+## 👥 Authors
 - **Sadrakh Ram Loudan Saputra** - Institut Teknologi Sepuluh Nopember
 - **Hakan Maulana Yazid Zidane** - Institut Teknologi Sepuluh Nopember
 - **Melodya Sembiring** - Institut Teknologi Sepuluh Nopember
+
+---
+
+## 📄 License
+This project is open-source and available under the MIT License.
