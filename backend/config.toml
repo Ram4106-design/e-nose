@@ -19,3 +19,16 @@ sine_amplitude = 0.15
 # 1.0 = 1 complete wave every 1 second
 # 0.2 = 1 complete wave every 5 seconds
 sine_frequency = 0.5
+
+# FSM Timing Configuration (matches Arduino firmware)
+# These values are for documentation/reference only
+# Actual timing is controlled by Arduino firmware
+[timing]
+pre_cond = 5      # Pre-conditioning: 5 seconds
+ramp_up = 3       # Ramp up: 3 seconds
+hold = 20         # Hold: 20 seconds 
+purge = 40       # Purge: 40 seconds 
+recovery = 5      # Recovery: 5 seconds
+
+# Total cycle time per level: ~303 seconds (~5 minutes)
+# Total for 5 levels: ~25 minutes

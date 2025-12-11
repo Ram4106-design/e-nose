@@ -9,9 +9,14 @@ qasync==0.27.1
 # Edge Impulse
 edge-impulse-linux==1.0.14
 
+# Edge Impulse Dependencies
+pyaudio>=0.2.14
+six>=1.17.0
+opencv-python>=4.5.1.48,<5
+
 # HTTP Requests (untuk upload ke Edge Impulse)
 requests==2.31.0
 
 # Optional: untuk analisis data
-numpy==1.26.2
+numpy>=1.26.2
 pandas==2.1.4

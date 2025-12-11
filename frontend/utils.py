@@ -4,9 +4,24 @@ E-Nose Utilities - Edge Impulse Handler
 
 import csv
 import json
-import requests
 from typing import Optional, Dict, Any
-from edge_impulse_linux.runner import ImpulseRunner
+
+# Try to import requests (required for Edge Impulse upload)
+try:
+    import requests
+    REQUESTS_AVAILABLE = True
+except ImportError:
+    REQUESTS_AVAILABLE = False
+    # Note: Error message will be shown by main.py if needed
+
+# Try to import Edge Impulse (optional for model loading)
+try:
+    from edge_impulse_linux.runner import ImpulseRunner
+    EDGE_IMPULSE_AVAILABLE = True
+except (ImportError, ModuleNotFoundError) as e:
+    EDGE_IMPULSE_AVAILABLE = False
+    ImpulseRunner = None
+    # Note: Error message will be shown by main.py if needed
 
 
 class EdgeImpulseHandler:
@@ -31,6 +46,10 @@ class EdgeImpulseHandler:
         Returns:
             True jika berhasil load, False jika gagal
         """
+        if not EDGE_IMPULSE_AVAILABLE:
+            print("❌ Edge Impulse library not installed. Cannot load model.")
+            return False
+            
         try:
             if self.runner:
                 try:
@@ -98,6 +117,12 @@ class EdgeImpulseHandler:
         Returns:
             Dictionary with 'success' (bool) and 'message' (str) keys
         """
+        if not REQUESTS_AVAILABLE:
+            return {
+                'success': False,
+                'message': 'requests module not installed. Install with: pip install requests'
+            }
+        
         try:
             # Read CSV file
             with open(csv_file_path, 'r') as f:
@@ -199,6 +224,12 @@ class EdgeImpulseHandler:
         Returns:
             Dictionary with 'success' (bool) and 'message' (str) keys
         """
+        if not REQUESTS_AVAILABLE:
+            return {
+                'success': False,
+                'message': 'requests module not installed. Install with: pip install requests'
+            }
+        
         try:
             if not data:
                 return {

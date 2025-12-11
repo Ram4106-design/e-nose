@@ -93,8 +93,8 @@ async fn main() -> Result<()> {
     tokio::spawn(gui_server(data_tx.clone(), cmd_tx.clone()));
 
     // Server untuk Arduino (TCP 8081)
-    let listener = TcpListener::bind("0.0.0.0:8081").await?;
-    println!("🔌 Listening for Arduino on 0.0.0.0:8081");
+    let listener = TcpListener::bind("192.168.100.187:8081").await?;
+    println!("🔌 Listening for Arduino on 192.168.100.187:8081");
 
     loop {
         let (stream, addr) = listener.accept().await?;

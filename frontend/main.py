@@ -21,14 +21,27 @@ from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QObject
 import qasync
 import pyqtgraph as pg
 
-from config import BACKEND_HOST, BACKEND_PORT, RECONNECT_DELAY, MAX_DATA_POINTS, SENSORS, STATES
+from config import BACKEND_HOST, BACKEND_PORT, RECONNECT_DELAY, MAX_DATA_POINTS, SENSORS, STATES, TIMING
 
 # Try to import Edge Impulse (optional)
 try:
     from utils import EdgeImpulseHandler
     EDGE_IMPULSE_AVAILABLE = True
-except ImportError:
-    print("⚠️ Edge Impulse not available (missing dependencies)")
+    print("✅ Edge Impulse handler loaded successfully")
+except ImportError as e:
+    print("=" * 60)
+    print("⚠️  WARNING: Edge Impulse features not available")
+    print("=" * 60)
+    print(f"   Reason: {str(e)}")
+    print()
+    print("   Missing dependencies. To fix, run:")
+    print("   > .\\venv\\Scripts\\activate")
+    print("   > pip install requests edge-impulse-linux")
+    print()
+    print("   Or use the installer script:")
+    print("   > .\\install_dependencies.bat")
+    print("=" * 60)
+    print()
     EdgeImpulseHandler = None
     EDGE_IMPULSE_AVAILABLE = False
 
@@ -70,12 +83,12 @@ class ENoseGUI(QMainWindow):
 
     def _setup_ui(self):
         """Setup semua UI components dengan tema gelap modern"""
-        # Central widget dengan background gelap
+        # Central widget dengan background gelap dan pattern
         wrapper = QWidget()
         wrapper.setStyleSheet("""
             QWidget {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                    stop:0 #1a1a2e, stop:0.5 #16213e, stop:1 #0f3460);
+                    stop:0 #0a1128, stop:0.3 #0d1b2a, stop:0.6 #1b263b, stop:1 #0a1128);
             }
         """)
         self.setCentralWidget(wrapper)
@@ -83,18 +96,22 @@ class ENoseGUI(QMainWindow):
         root.setContentsMargins(15, 15, 15, 15)
         root.setSpacing(10)
         
-        # Title dengan gradient modern
+        # Title dengan gradient modern dan glow effect
         title = QLabel("🔬 E-NOSE REALTIME MONITORING")
-        title.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
+        title.setFont(QFont("Segoe UI", 20, QFont.Weight.Bold))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setStyleSheet("""
-            color: white; 
-            background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                stop:0 #e94560, stop:0.5 #00d9ff, stop:1 #e94560);
-            padding: 10px; 
-            border-radius: 12px;
-            font-weight: bold;
-            letter-spacing: 2px;
+            QLabel {
+                color: white; 
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                    stop:0 #0077b6, stop:0.25 #0096c7, stop:0.5 #00d9ff, 
+                    stop:0.75 #0096c7, stop:1 #0077b6);
+                padding: 15px; 
+                border-radius: 15px;
+                font-weight: bold;
+                letter-spacing: 3px;
+                border: 2px solid rgba(0, 217, 255, 0.3);
+            }
         """)
         root.addWidget(title)
 
@@ -119,10 +136,11 @@ class ENoseGUI(QMainWindow):
         graph_frame = QFrame()
         graph_frame.setStyleSheet("""
             QFrame {
-                background-color: #0a0e27;
-                border-radius: 12px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #0a0e27, stop:1 #050814);
+                border-radius: 15px;
                 border: 2px solid #00d9ff;
-                padding: 12px;
+                padding: 15px;
             }
         """)
         graph_layout = QVBoxLayout(graph_frame)
@@ -130,8 +148,12 @@ class ENoseGUI(QMainWindow):
         graph_layout.setSpacing(5)
 
         graph_title = QLabel("📊 Real-Time Sensor Data")
-        graph_title.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
-        graph_title.setStyleSheet("color: #00d9ff; padding: 5px;")
+        graph_title.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
+        graph_title.setStyleSheet("""
+            color: #00d9ff; 
+            padding: 8px;
+            letter-spacing: 1px;
+        """)
         graph_layout.addWidget(graph_title)
 
         # Setup pyqtgraph dengan tema gelap
@@ -148,13 +170,13 @@ class ENoseGUI(QMainWindow):
         self.data_buffers = {}
         
         neon_colors = {
-            "NO2": "#ff006e",    # Neon pink
-            "ETH": "#00f5ff",    # Neon cyan
+            "NO2": "#ff006e",    # Hot pink
+            "ETH": "#00f5ff",    # Electric cyan
             "VOC": "#39ff14",    # Neon green
-            "CO": "#ffbe0b",     # Neon yellow
-            "COM": "#fb5607",    # Neon orange
-            "ETHM": "#8338ec",   # Neon purple
-            "VOCM": "#3a86ff"    # Neon blue
+            "CO": "#ffbe0b",     # Golden yellow
+            "COM": "#ff5400",    # Bright orange
+            "ETHM": "#9d4edd",   # Purple
+            "VOCM": "#3a86ff"    # Royal blue
         }
         
         for sensor in SENSORS.keys():
@@ -208,10 +230,11 @@ class ENoseGUI(QMainWindow):
         status_frame = QFrame()
         status_frame.setStyleSheet("""
             QFrame {
-                background: #16213e;
-                border-radius: 10px;
-                border: 2px solid #00d9ff;
-                padding: 12px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #1b263b, stop:1 #0d1b2a);
+                border-radius: 12px;
+                border: 2px solid rgba(0, 217, 255, 0.5);
+                padding: 15px;
             }
         """)
         status_layout = QVBoxLayout(status_frame)
@@ -221,10 +244,14 @@ class ENoseGUI(QMainWindow):
         self.status = QLabel("🔴 Disconnected")
         self.status.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
         self.status.setStyleSheet("""
-            color: #e94560; 
-            padding: 10px; 
-            background: rgba(233, 69, 96, 0.15); 
-            border-radius: 8px;
+            QLabel {
+                color: #0096c7; 
+                padding: 12px; 
+                background: rgba(0, 150, 199, 0.2); 
+                border-radius: 10px;
+                border: 1px solid rgba(0, 150, 199, 0.3);
+                font-size: 11pt;
+            }
         """)
         self.status.setAlignment(Qt.AlignmentFlag.AlignCenter)
         status_layout.addWidget(self.status)
@@ -234,23 +261,29 @@ class ENoseGUI(QMainWindow):
         info_layout.setSpacing(6)
         
         self.state_label = QLabel("STATE: —")
-        self.state_label.setFont(QFont("Consolas", 9, QFont.Weight.Bold))
+        self.state_label.setFont(QFont("Consolas", 10, QFont.Weight.Bold))
         self.state_label.setStyleSheet("""
-            color: #00d9ff; 
-            background: rgba(0, 217, 255, 0.15); 
-            padding: 6px; 
-            border-radius: 6px;
+            QLabel {
+                color: #00d9ff; 
+                background: rgba(0, 217, 255, 0.15); 
+                padding: 8px; 
+                border-radius: 8px;
+                border: 1px solid rgba(0, 217, 255, 0.3);
+            }
         """)
         self.state_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         info_layout.addWidget(self.state_label)
 
         self.level_label = QLabel("LVL: —")
-        self.level_label.setFont(QFont("Consolas", 9, QFont.Weight.Bold))
+        self.level_label.setFont(QFont("Consolas", 10, QFont.Weight.Bold))
         self.level_label.setStyleSheet("""
-            color: #ffbe0b; 
-            background: rgba(255, 190, 11, 0.15); 
-            padding: 6px; 
-            border-radius: 6px;
+            QLabel {
+                color: #00d9ff; 
+                background: rgba(0, 217, 255, 0.15); 
+                padding: 8px; 
+                border-radius: 8px;
+                border: 1px solid rgba(0, 217, 255, 0.3);
+            }
         """)
         self.level_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         info_layout.addWidget(self.level_label)
@@ -261,9 +294,10 @@ class ENoseGUI(QMainWindow):
         progress_container = QFrame()
         progress_container.setStyleSheet("""
             QFrame {
-                background: rgba(0, 217, 255, 0.1);
-                border-radius: 8px;
-                padding: 10px;
+                background: rgba(0, 217, 255, 0.08);
+                border-radius: 10px;
+                padding: 12px;
+                border: 1px solid rgba(0, 217, 255, 0.2);
             }
         """)
         progress_layout = QVBoxLayout(progress_container)
@@ -272,28 +306,32 @@ class ENoseGUI(QMainWindow):
 
         # Progress title
         progress_title = QLabel("LEVEL PROGRESS")
-        progress_title.setFont(QFont("Segoe UI", 9, QFont.Weight.Bold))
-        progress_title.setStyleSheet("color: #00d9ff; padding: 2px;")
+        progress_title.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        progress_title.setStyleSheet("""
+            color: #00d9ff; 
+            padding: 4px;
+            letter-spacing: 1px;
+        """)
         progress_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         progress_layout.addWidget(progress_title)
 
         # Progress bar with level indicators
         level_bar_layout = QHBoxLayout()
-        level_bar_layout.setSpacing(4)
+        level_bar_layout.setSpacing(6)
         
         self.level_indicators = []
         for i in range(1, 6):
             level_box = QLabel(str(i))
-            level_box.setFont(QFont("Consolas", 10, QFont.Weight.Bold))
+            level_box.setFont(QFont("Consolas", 11, QFont.Weight.Bold))
             level_box.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            level_box.setMinimumSize(35, 35)
-            level_box.setMaximumSize(35, 35)
+            level_box.setMinimumSize(40, 40)
+            level_box.setMaximumSize(40, 40)
             level_box.setStyleSheet("""
                 QLabel {
-                    background: rgba(255, 255, 255, 0.1);
-                    color: #666;
-                    border: 2px solid #444;
-                    border-radius: 6px;
+                    background: rgba(255, 255, 255, 0.05);
+                    color: #555;
+                    border: 2px solid #333;
+                    border-radius: 8px;
                     font-weight: bold;
                 }
             """)
@@ -305,13 +343,17 @@ class ENoseGUI(QMainWindow):
 
         # Prediction Label
         self.pred_label = QLabel("PREDICTION: —")
-        self.pred_label.setFont(QFont("Consolas", 10, QFont.Weight.Bold))
+        self.pred_label.setFont(QFont("Consolas", 11, QFont.Weight.Bold))
         self.pred_label.setStyleSheet("""
-            color: white; 
-            background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                stop:0 #8338ec, stop:1 #3a86ff);
-            padding: 10px; 
-            border-radius: 8px;
+            QLabel {
+                color: white; 
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                    stop:0 #0077b6, stop:0.5 #00b4d8, stop:1 #0077b6);
+                padding: 12px; 
+                border-radius: 10px;
+                border: 2px solid rgba(0, 180, 216, 0.3);
+                font-size: 10pt;
+            }
         """)
         self.pred_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         status_layout.addWidget(self.pred_label)
@@ -323,10 +365,11 @@ class ENoseGUI(QMainWindow):
         btn_frame = QFrame()
         btn_frame.setStyleSheet("""
             QFrame {
-                background: #16213e;
-                border-radius: 10px;
-                border: 2px solid #e94560;
-                padding: 12px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #1b263b, stop:1 #0d1b2a);
+                border-radius: 12px;
+                border: 2px solid rgba(0, 150, 199, 0.5);
+                padding: 15px;
             }
         """)
         btn_layout = QVBoxLayout(btn_frame)
@@ -340,20 +383,22 @@ class ENoseGUI(QMainWindow):
         self.btn_start.setStyleSheet("""
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                    stop:0 #00d9ff, stop:1 #0096c7);
+                    stop:0 #00d9ff, stop:0.5 #00b4d8, stop:1 #0096c7);
                 color: white;
-                padding: 8px;
-                border-radius: 8px;
+                padding: 10px;
+                border-radius: 10px;
                 font-weight: bold;
-                border: none;
+                border: 2px solid rgba(0, 217, 255, 0.3);
+                font-size: 10pt;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                    stop:0 #00f5ff, stop:1 #00b4d8);
-                transform: scale(1.05);
+                    stop:0 #48cae4, stop:0.5 #00d9ff, stop:1 #00b4d8);
+                border: 2px solid rgba(0, 217, 255, 0.6);
             }
             QPushButton:pressed {
                 background: #0077b6;
+                padding: 11px 9px 9px 11px;
             }
         """)
         self.btn_start.clicked.connect(self.start_sampling_clicked)
@@ -366,19 +411,22 @@ class ENoseGUI(QMainWindow):
         self.btn_stop.setStyleSheet("""
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                    stop:0 #e94560, stop:1 #c1121f);
+                    stop:0 #023e8a, stop:0.5 #03045e, stop:1 #001d3d);
                 color: white;
-                padding: 8px;
-                border-radius: 8px;
+                padding: 10px;
+                border-radius: 10px;
                 font-weight: bold;
-                border: none;
+                border: 2px solid rgba(2, 62, 138, 0.3);
+                font-size: 10pt;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                    stop:0 #ff4d6d, stop:1 #d62828);
+                    stop:0 #0077b6, stop:0.5 #023e8a, stop:1 #03045e);
+                border: 2px solid rgba(0, 119, 182, 0.6);
             }
             QPushButton:pressed {
-                background: #9d0208;
+                background: #000814;
+                padding: 11px 9px 9px 11px;
             }
         """)
         self.btn_stop.clicked.connect(lambda: asyncio.create_task(self.send_cmd("STOP_SAMPLING")))
@@ -391,19 +439,22 @@ class ENoseGUI(QMainWindow):
         self.btn_clear.setStyleSheet("""
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                    stop:0 #8338ec, stop:1 #5a189a);
+                    stop:0 #0077b6, stop:0.5 #023e8a, stop:1 #03045e);
                 color: white;
-                padding: 8px;
-                border-radius: 8px;
+                padding: 10px;
+                border-radius: 10px;
                 font-weight: bold;
-                border: none;
+                border: 2px solid rgba(0, 119, 182, 0.3);
+                font-size: 10pt;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                    stop:0 #9d4edd, stop:1 #7209b7);
+                    stop:0 #00b4d8, stop:0.5 #0096c7, stop:1 #0077b6);
+                border: 2px solid rgba(0, 180, 216, 0.6);
             }
             QPushButton:pressed {
-                background: #3c096c;
+                background: #001d3d;
+                padding: 11px 9px 9px 11px;
             }
         """)
         self.btn_clear.clicked.connect(self.clear_graph)
@@ -416,10 +467,11 @@ class ENoseGUI(QMainWindow):
         csv_frame = QFrame()
         csv_frame.setStyleSheet("""
             QFrame {
-                background: #16213e;
-                border-radius: 10px;
-                border: 2px solid #ffbe0b;
-                padding: 12px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #1b263b, stop:1 #0d1b2a);
+                border-radius: 12px;
+                border: 2px solid rgba(0, 217, 255, 0.5);
+                padding: 15px;
             }
         """)
         csv_layout = QVBoxLayout(csv_frame)
@@ -428,7 +480,7 @@ class ENoseGUI(QMainWindow):
 
         csv_title = QLabel("💾 Export & Model")
         csv_title.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
-        csv_title.setStyleSheet("color: #ffbe0b; padding: 2px;")
+        csv_title.setStyleSheet("color: #00d9ff; padding: 2px;")
         csv_layout.addWidget(csv_title)
 
         self.sample_name_input = QLineEdit()
@@ -438,15 +490,16 @@ class ENoseGUI(QMainWindow):
         self.sample_name_input.setFont(QFont("Segoe UI", 8))
         self.sample_name_input.setStyleSheet("""
             QLineEdit {
-                background: #0a0e27;
+                background: rgba(10, 14, 39, 0.8);
                 color: white;
-                border: 2px solid #444;
-                border-radius: 4px;
-                padding: 4px;
+                border: 2px solid rgba(0, 217, 255, 0.3);
+                border-radius: 6px;
+                padding: 6px;
                 font-size: 9pt;
             }
             QLineEdit:focus {
                 border: 2px solid #00d9ff;
+                background: rgba(10, 14, 39, 1);
             }
         """)
         csv_layout.addWidget(self.sample_name_input)
@@ -460,15 +513,16 @@ class ENoseGUI(QMainWindow):
         self.ei_api_key_input.setFont(QFont("Segoe UI", 8))
         self.ei_api_key_input.setStyleSheet("""
             QLineEdit {
-                background: #0a0e27;
+                background: rgba(10, 14, 39, 0.8);
                 color: white;
-                border: 2px solid #444;
-                border-radius: 4px;
-                padding: 4px;
+                border: 2px solid rgba(0, 150, 199, 0.3);
+                border-radius: 6px;
+                padding: 6px;
                 font-size: 9pt;
             }
             QLineEdit:focus {
-                border: 2px solid #8338ec;
+                border: 2px solid #0096c7;
+                background: rgba(10, 14, 39, 1);
             }
         """)
         csv_layout.addWidget(self.ei_api_key_input)
@@ -481,15 +535,16 @@ class ENoseGUI(QMainWindow):
         self.ei_project_id_input.setFont(QFont("Segoe UI", 8))
         self.ei_project_id_input.setStyleSheet("""
             QLineEdit {
-                background: #0a0e27;
+                background: rgba(10, 14, 39, 0.8);
                 color: white;
-                border: 2px solid #444;
-                border-radius: 4px;
-                padding: 4px;
+                border: 2px solid rgba(0, 150, 199, 0.3);
+                border-radius: 6px;
+                padding: 6px;
                 font-size: 9pt;
             }
             QLineEdit:focus {
-                border: 2px solid #8338ec;
+                border: 2px solid #0096c7;
+                background: rgba(10, 14, 39, 1);
             }
         """)
         csv_layout.addWidget(self.ei_project_id_input)
@@ -502,15 +557,16 @@ class ENoseGUI(QMainWindow):
         self.ei_label_input.setFont(QFont("Segoe UI", 8))
         self.ei_label_input.setStyleSheet("""
             QLineEdit {
-                background: #0a0e27;
+                background: rgba(10, 14, 39, 0.8);
                 color: white;
-                border: 2px solid #444;
-                border-radius: 4px;
-                padding: 4px;
+                border: 2px solid rgba(0, 150, 199, 0.3);
+                border-radius: 6px;
+                padding: 6px;
                 font-size: 9pt;
             }
             QLineEdit:focus {
-                border: 2px solid #8338ec;
+                border: 2px solid #0096c7;
+                background: rgba(10, 14, 39, 1);
             }
         """)
         csv_layout.addWidget(self.ei_label_input)
@@ -523,16 +579,21 @@ class ENoseGUI(QMainWindow):
         self.btn_save_csv.setStyleSheet("""
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                    stop:0 #ffbe0b, stop:1 #fb8500);
-                color: #1a1a2e;
-                padding: 4px;
-                border-radius: 4px;
+                    stop:0 #00d9ff, stop:1 #0096c7);
+                color: #0a1128;
+                padding: 6px;
+                border-radius: 6px;
                 font-weight: bold;
-                border: none;
+                border: 1px solid rgba(0, 217, 255, 0.3);
+                font-size: 9pt;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                    stop:0 #ffd60a, stop:1 #ffb703);
+                    stop:0 #48cae4, stop:1 #00b4d8);
+                border: 1px solid rgba(0, 217, 255, 0.6);
+            }
+            QPushButton:pressed {
+                background: #0077b6;
             }
         """)
         self.btn_save_csv.clicked.connect(self.save_to_csv)
@@ -548,19 +609,21 @@ class ENoseGUI(QMainWindow):
         self.btn_upload_ei.setStyleSheet("""
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                    stop:0 #8338ec, stop:1 #5a189a);
+                    stop:0 #0077b6, stop:1 #023e8a);
                 color: white;
-                padding: 4px;
-                border-radius: 4px;
+                padding: 6px;
+                border-radius: 6px;
                 font-weight: bold;
-                border: none;
+                border: 1px solid rgba(0, 119, 182, 0.3);
+                font-size: 9pt;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                    stop:0 #9d4edd, stop:1 #7209b7);
+                    stop:0 #00b4d8, stop:1 #0096c7);
+                border: 1px solid rgba(0, 180, 216, 0.6);
             }
             QPushButton:pressed {
-                background: #3c096c;
+                background: #03045e;
             }
         """)
         self.btn_upload_ei.clicked.connect(self.upload_to_edge_impulse_clicked)
@@ -573,15 +636,22 @@ class ENoseGUI(QMainWindow):
         model_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         model_btn.setStyleSheet("""
             QPushButton {
-                background: #8338ec;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #0077b6, stop:1 #023e8a);
                 color: white;
-                padding: 4px;
-                border-radius: 4px;
+                padding: 6px;
+                border-radius: 6px;
                 font-weight: bold;
-                border: none;
+                border: 1px solid rgba(0, 119, 182, 0.3);
+                font-size: 9pt;
             }
             QPushButton:hover {
-                background: #9d4edd;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #00b4d8, stop:1 #0096c7);
+                border: 1px solid rgba(0, 180, 216, 0.6);
+            }
+            QPushButton:pressed {
+                background: #001d3d;
             }
         """)
         model_btn.clicked.connect(self.load_model_clicked)
@@ -594,10 +664,11 @@ class ENoseGUI(QMainWindow):
         log_frame = QFrame()
         log_frame.setStyleSheet("""
             QFrame {
-                background: #16213e;
-                border-radius: 10px;
-                border: 2px solid #39ff14;
-                padding: 12px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #1b263b, stop:1 #0d1b2a);
+                border-radius: 12px;
+                border: 2px solid rgba(0, 217, 255, 0.5);
+                padding: 15px;
             }
         """)
         log_layout = QVBoxLayout(log_frame)
@@ -606,7 +677,7 @@ class ENoseGUI(QMainWindow):
 
         log_title = QLabel("📋 System Log")
         log_title.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
-        log_title.setStyleSheet("color: #39ff14; padding: 5px;")
+        log_title.setStyleSheet("color: #00d9ff; padding: 5px;")
         log_layout.addWidget(log_title)
 
         self.log = QTextEdit()
@@ -614,7 +685,7 @@ class ENoseGUI(QMainWindow):
         self.log.setStyleSheet("""
             QTextEdit {
                 background: #0a0e27;
-                color: #00ff00;
+                color: #00d9ff;
                 border: none;
                 border-radius: 6px;
                 padding: 8px;
@@ -639,7 +710,7 @@ class ENoseGUI(QMainWindow):
         self.current_sample_data = []
         self.is_sampling = True
         self.log.append("🔄 Starting sampling...")
-        self.log.append("⏱ Hold: 2m | Purge: 4m")
+        self.log.append(f"⏱ Hold: {TIMING['HOLD']}s | Purge: {TIMING['PURGE']}s | Total: ~{int((TIMING['PRE_COND'] + TIMING['RAMP_UP'] + TIMING['HOLD'] + TIMING['PURGE'] + TIMING['RECOVERY']) * 5 / 60)}min")
         asyncio.create_task(self.send_cmd("START_SAMPLING"))
 
     def clear_graph(self):
@@ -655,10 +726,10 @@ class ENoseGUI(QMainWindow):
         for indicator in self.level_indicators:
             indicator.setStyleSheet("""
                 QLabel {
-                    background: rgba(255, 255, 255, 0.1);
-                    color: #666;
-                    border: 2px solid #444;
-                    border-radius: 6px;
+                    background: rgba(255, 255, 255, 0.05);
+                    color: #555;
+                    border: 2px solid #333;
+                    border-radius: 8px;
                     font-weight: bold;
                 }
             """)
@@ -810,33 +881,33 @@ class ENoseGUI(QMainWindow):
                 indicator.setStyleSheet("""
                     QLabel {
                         background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                            stop:0 #39ff14, stop:1 #00ff00);
+                            stop:0 #00d9ff, stop:1 #0096c7);
                         color: #0a0e27;
-                        border: 2px solid #39ff14;
+                        border: 2px solid #00d9ff;
                         border-radius: 6px;
                         font-weight: bold;
                     }
                 """)
             elif i == current_level:
-                # Current level - cyan gradient with glow
+                # Current level - bright cyan with stronger glow
                 indicator.setStyleSheet("""
                     QLabel {
                         background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                            stop:0 #00d9ff, stop:1 #00f5ff);
+                            stop:0 #48cae4, stop:1 #00d9ff);
                         color: #0a0e27;
                         border: 3px solid #00d9ff;
-                        border-radius: 6px;
+                        border-radius: 8px;
                         font-weight: bold;
                     }
                 """)
             else:
-                # Pending levels - dark/inactive
+                # Pending levels - dark/inactive with subtle border
                 indicator.setStyleSheet("""
                     QLabel {
-                        background: rgba(255, 255, 255, 0.1);
-                        color: #666;
-                        border: 2px solid #444;
-                        border-radius: 6px;
+                        background: rgba(255, 255, 255, 0.05);
+                        color: #555;
+                        border: 2px solid #333;
+                        border-radius: 8px;
                         font-weight: bold;
                     }
                 """)
@@ -998,10 +1069,14 @@ class ENoseGUI(QMainWindow):
                 self.connected = True
                 self.status.setText("🟢 Connected")
                 self.status.setStyleSheet("""
-                    color: #39ff14; 
-                    padding: 8px; 
-                    background: rgba(57, 255, 20, 0.15); 
-                    border-radius: 8px;
+                    QLabel {
+                        color: #00d9ff; 
+                        padding: 12px; 
+                        background: rgba(0, 217, 255, 0.2); 
+                        border-radius: 10px;
+                        border: 1px solid rgba(0, 217, 255, 0.4);
+                        font-size: 11pt;
+                    }
                 """)
                 self.log.append("🟢 Connected to backend!")
                 await self.recv_loop()
@@ -1010,9 +1085,9 @@ class ENoseGUI(QMainWindow):
                 self.connected = False
                 self.status.setText("🔴 Disconnected")
                 self.status.setStyleSheet("""
-                    color: #e94560; 
+                    color: #0096c7; 
                     padding: 8px; 
-                    background: rgba(233, 69, 96, 0.15); 
+                    background: rgba(0, 150, 199, 0.15); 
                     border-radius: 8px;
                 """)
                 self.log.append(f"⚠️ Reconnect in {RECONNECT_DELAY}s...")
