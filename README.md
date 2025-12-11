@@ -1,167 +1,152 @@
 # 🔬 E-NOSE Real-Time Monitoring System
 
-Electronic Nose (E-Nose) system dengan monitoring real-time dan integrasi Edge Impulse untuk machine learning.
+Sistem Electronic Nose (E-Nose) untuk monitoring kualitas udara secara real-time dengan integrasi Edge Impulse untuk machine learning. Proyek ini menggabungkan performa tinggi Rust di backend dan kemudahan Python untuk antarmuka pengguna (GUI).
 
-## 📋 Features
+---
+
+## 📋 Fitur Utama
 
 ### Backend (Rust)
-- ⚡ High-performance TCP server
-- 📊 Real-time sensor data streaming
-- 🔄 Finite State Machine (FSM) untuk sampling control
-- 🎯 5-level sampling protocol (PRE_COND → RAMP_UP → HOLD → PURGE → RECOVERY)
-- 📡 Serial communication dengan Arduino
+- ⚡ **High-performance TCP Server**: Menangani aliran data sensor dengan latensi sangat rendah.
+- 🔄 **FSM Control**: Mengontrol siklus sampling 5-tahap (PRE_COND → RAMP_UP → HOLD → PURGE → RECOVERY).
+- 📡 **Serial Communication**: Komunikasi stabil dengan Arduino.
 
 ### Frontend (Python/PyQt6)
-- 🎨 Modern dark-themed UI dengan neon accents
-- 📈 Real-time graph visualization (7 sensors)
-- 🔴 Live status monitoring dengan level progress bar
-- 💾 CSV export untuk data analysis
-- 📤 **Real-time auto-upload ke Edge Impulse**
-- 🧠 Edge Impulse model loading untuk klasifikasi
+- 🎨 **Modern UI**: Antarmuka gelap (dark mode) dengan aksen neon yang futuristik.
+- 📈 **Real-time Graph**: Visualisasi 7 sensor sekaligus secara langsung.
+- ☁️ **Edge Impulse Integration**: Upload data otomatis untuk pelatihan model AI.
+- 💾 **CSV Export**: Simpan data lokal untuk analisis lebih lanjut.
 
-### Edge Impulse Integration
-- ✅ Automatic data upload setelah sampling selesai
-- 🔐 Secure API authentication
-- 🏷️ Automatic data labeling
-- 📊 Seamless training data collection
+---
 
-## 🚀 Quick Start
+## 🛠️ Persiapan (Prerequisites)
 
-### Prerequisites
-- Python 3.8+
-- Rust 1.70+
-- Edge Impulse account (optional, untuk ML features)
+Sebelum memulai, pastikan Anda telah menginstal software berikut:
 
-### Installation
+1.  **Rust**: Untuk menjalankan backend.
+    - Download: [rustup.rs](https://rustup.rs/)
+2.  **Python 3.8+**: Untuk menjalankan frontend.
+    - Download: [python.org](https://www.python.org/)
+3.  **Arduino IDE**: Untuk upload kode ke mikrokontroler.
+    - Download: [arduino.cc](https://www.arduino.cc/en/software)
+4.  **Git**: Untuk mengunduh kode program.
+    - Download: [git-scm.com](https://git-scm.com/)
 
-1. **Clone repository**
+---
+
+## 📥 Instalasi
+
+Ikuti langkah-langkah ini untuk menyiapkan proyek di komputer Anda:
+
+### 1. Clone Repository
+Buka terminal (Command Prompt / PowerShell) dan jalankan perintah berikut:
+
 ```bash
-git clone https://github.com/YOUR_USERNAME/enose.git
-cd enose
+git clone https://github.com/Ram4106-design/e-nose.git
+cd e-nose
 ```
 
-2. **Setup Backend (Rust)**
+### 2. Setup Backend (Rust)
+Masuk ke folder backend dan build programnya:
+
 ```bash
 cd backend
 cargo build --release
-cargo run --release
 ```
+*Tunggu hingga proses compile selesai (mungkin memakan waktu beberapa menit untuk pertama kali).*
 
-3. **Setup Frontend (Python)**
+### 3. Setup Frontend (Python)
+Buka terminal baru, masuk ke folder frontend, dan install library yang dibutuhkan:
+
 ```bash
 cd frontend
-python -m venv venv
-venv\Scripts\activate  # Windows
-# or: source venv/bin/activate  # Linux/Mac
-
 pip install -r requirements.txt
-python main.py
 ```
 
-## 📊 Sensors
+---
 
-| Sensor | Description | Unit |
-|--------|-------------|------|
-| NO2 | Nitrogen Dioxide | ppm |
-| ETH | Ethanol | ppm |
-| VOC | Volatile Organic Compounds | ppm |
-| CO | Carbon Monoxide | ppm |
-| COM | Compensated value | - |
-| ETHM | Ethanol Modified | ppm |
-| VOCM | VOC Modified | ppm |
+## 🚀 Cara Menjalankan (How to Run)
 
-## 🎯 Usage
+Untuk menjalankan sistem, Anda perlu membuka 3 komponen secara berurutan:
 
-### Real-Time Edge Impulse Integration
+### Langkah 1: Upload Kode Arduino
+1.  Buka file `arduino_enose_persistent.ino` menggunakan Arduino IDE.
+2.  Hubungkan Arduino ke komputer via USB.
+3.  Pilih Board dan Port yang sesuai di Arduino IDE.
+4.  Klik tombol **Upload** (➡️).
+5.  Pastikan upload sukses ("Done uploading").
 
-1. **Fill credentials** di panel "💾 Export & Model":
-   - API Key: Your Edge Impulse API key
-   - Project ID: Your Edge Impulse project ID
-   - Label: Data label (e.g., `coffee`, `tea`, `ethanol`)
+### Langkah 2: Jalankan Backend (Server)
+Backend bertugas membaca data dari Arduino dan mengirimkannya ke Frontend.
 
-2. **Start sampling**:
-   - Click "▶ START SAMPLING"
-   - Wait for 5 levels to complete (~6 minutes)
+1.  Buka terminal di folder `backend`.
+2.  Jalankan perintah:
+    ```bash
+    cargo run --release
+    ```
+3.  Anda akan melihat pesan: `Server listening on 127.0.0.1:8082`.
+4.  **Biarkan terminal ini tetap terbuka.**
 
-3. **Automatic upload**:
-   - Data otomatis ter-upload ke Edge Impulse
-   - Check Edge Impulse dashboard untuk verify
+### Langkah 3: Jalankan Frontend (Aplikasi)
+Frontend adalah tampilan antarmuka untuk mengontrol alat.
 
-### Manual Workflow
+1.  Buka terminal **baru** di folder `frontend`.
+2.  Jalankan perintah:
+    ```bash
+    python main.py
+    ```
+3.  Jendela aplikasi E-Nose akan muncul.
 
-1. Start sampling → Wait for completion
-2. Save CSV dengan "💾 SAVE CSV"
-3. Upload manual dengan "📤 UPLOAD TO EI" (optional)
+---
 
-## 🏗️ Architecture
+## 📖 Panduan Penggunaan (User Guide)
 
-```
-┌─────────────┐         ┌──────────────┐         ┌─────────────────┐
-│   Arduino   │ Serial  │ Rust Backend │  TCP    │ Python Frontend │
-│  (Sensors)  │────────▶│   (Server)   │────────▶│   (Dashboard)   │
-└─────────────┘         └──────────────┘         └─────────────────┘
-                                                          │
-                                                          │ HTTPS
-                                                          ▼
-                                                  ┌───────────────┐
-                                                  │ Edge Impulse  │
-                                                  │      API      │
-                                                  └───────────────┘
-```
+Berikut adalah langkah-langkah detail untuk menggunakan aplikasi:
 
-## 📁 Project Structure
+### A. Menghubungkan ke Sistem
+1.  Saat aplikasi terbuka, status di pojok kiri bawah harusnya **"Connected"** (Hijau).
+2.  Jika **"Disconnected"**, pastikan Backend (Langkah 2) sudah berjalan.
 
-```
-enose/
-├── backend/           # Rust TCP server
-│   ├── src/
-│   │   ├── main.rs
-│   │   ├── filtering.rs
-│   │   └── ...
-│   └── Cargo.toml
-├── frontend/          # Python PyQt6 GUI
-│   ├── main.py        # Main application
-│   ├── config.py      # Configuration
-│   ├── utils.py       # Edge Impulse handler
-│   └── requirements.txt
-└── csv/              # Saved CSV files
-```
+### B. Melakukan Sampling (Pengambilan Data)
+1.  Siapkan sampel aroma di dekat sensor.
+2.  Klik tombol **▶ START SAMPLING**.
+3.  Sistem akan berjalan otomatis melalui 5 tahapan:
+    - **PRE_COND**: Pemanasan sensor.
+    - **RAMP_UP**: Persiapan naik.
+    - **HOLD**: Pengambilan data utama (Penting!).
+    - **PURGE**: Pembersihan sensor.
+    - **RECOVERY**: Pendinginan.
+4.  Tunggu hingga progress bar mencapai 100% dan status kembali ke "IDLE".
 
-## 🔧 Configuration
+### C. Upload ke Edge Impulse (Otomatis/Manual)
+Fitur ini memungkinkan Anda mengirim data langsung ke cloud Edge Impulse untuk machine learning.
 
-### Backend (`backend/src/main.rs`)
-- TCP Port: `8082`
-- Serial Port: Auto-detect Arduino
-- Baud Rate: `115200`
+1.  Di panel kanan bawah ("💾 Export & Model"), isi data berikut:
+    - **API Key**: Kunci API dari proyek Edge Impulse Anda.
+    - **Project ID**: ID Proyek Edge Impulse.
+    - **Label**: Nama label untuk data ini (contoh: `kopi`, `teh`, `alkohol`).
+2.  Jika ingin upload otomatis setiap selesai sampling, biarkan tombol upload manual. Aplikasi akan otomatis mengupload jika API Key terisi.
+3.  Untuk upload manual data terakhir, klik tombol **📤 UPLOAD TO EI**.
 
-### Frontend (`frontend/config.py`)
-- Backend Host: `127.0.0.1`
-- Backend Port: `8082`
-- Max Data Points: `300`
-- Edge Impulse API: `https://ingestion.edgeimpulse.com/api/training/data`
+### D. Menyimpan Data ke CSV
+1.  Setelah sampling selesai, klik tombol **💾 SAVE CSV**.
+2.  File akan tersimpan di folder `csv/` dengan nama format tanggal dan waktu.
 
-## 📝 CSV Format
+---
 
-```csv
-sample_name,collection_date,timestamp,NO2,ETH,VOC,CO,COM,ETHM,VOCM
-coffee,2025-12-01T17:00:00,2025-12-01T17:00:01,1.2,3.4,5.6,7.8,9.0,1.1,2.2
-...
-```
+## 🔧 Troubleshooting (Pemecahan Masalah)
 
-## 🤝 Contributing
+- **Error: "Serial port not found" di Backend**
+  - Pastikan Arduino tercolok dengan benar.
+  - Tutup Arduino IDE Serial Monitor jika sedang terbuka (Port tidak bisa dipakai 2 aplikasi sekaligus).
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+- **Error: "Connection Refused" di Frontend**
+  - Pastikan Backend (Rust) sudah berjalan (`cargo run --release`).
+  - Cek apakah firewall memblokir port 8082.
 
-## 📄 License
+---
 
-This project is licensed under the MIT License.
-
-## 👥 Authors
-
-- Your Name - Initial work
-
-## 🙏 Acknowledgments
-
-- Edge Impulse for ML platform
-- PyQt6 for GUI framework
-- Rust community for excellent tools
+## 👥 Penulis
+- **Sadrakh Ram Loudan Saputra** - Institut Teknologi Sepuluh Nopember
+- **Hakan Maulana Yazid Zidane** - Institut Teknologi Sepuluh Nopember
+- **Melodya Sembiring** - Institut Teknologi Sepuluh Nopember
