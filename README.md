@@ -138,6 +138,23 @@ This feature allows you to build a dataset for machine learning classification.
 2.  The data will be saved as a `.csv` file in the `csv/` directory within your project folder.
 3.  The filename will include the current timestamp for easy organization.
 
+### E. 📊 Data Visualization
+The system comes bundled with **Gnuplot** for advanced 3D visualization of sensor data.
+
+1.  Navigate to the `csv/` directory:
+    ```bash
+    cd csv
+    ```
+2.  Run the visualization script:
+    ```powershell
+    .\plot_all.ps1
+    ```
+3.  This will automatically:
+    - Detect all `.csv` files in the directory.
+    - Launch Gnuplot for each file.
+    - Display a 3D interactive plot of the sensor data.
+    - Press **Enter** in the command window to proceed to the next file.
+
 ---
 
 ## 🔧 Troubleshooting
