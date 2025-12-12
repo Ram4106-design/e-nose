@@ -178,6 +178,14 @@ The system comes bundled with **Gnuplot** for advanced 3D visualization of senso
 You can see a presentation in this link :
 https://www.canva.com/design/DAG6WvuOCFE/WUbyx3I3FtInJN7jPv_UEg/edit?utm_content=DAG6WvuOCFE&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
 
+## Report UAS 
+You can see a report in this link :
+https://drive.google.com/file/d/1iQDORXXXcKGlINf4yj-QDosfoPlXGISc/view?usp=sharing
+
+## Documentation
+You can see full documentation on graphic in this link :
+https://drive.google.com/drive/folders/1JMfnT8XOA5uCpr5_LnS0CNYw-blEBz39?usp=sharing
+
 ## 👥 Authors
 - **Sadrakh Ram Loudan Saputra** - Institut Teknologi Sepuluh Nopember
 - **Hakan Maulana Yazid Zidane** - Institut Teknologi Sepuluh Nopember
