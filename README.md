@@ -174,6 +174,9 @@ The system comes bundled with **Gnuplot** for advanced 3D visualization of senso
 - **Fix**: Double-check your credentials in the "Export & Model" panel. Ensure you have an active internet connection.
 
 ---
+## Presentation 
+You can see a presentation in this link :
+https://www.canva.com/design/DAG6WvuOCFE/WUbyx3I3FtInJN7jPv_UEg/edit?utm_content=DAG6WvuOCFE&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
 
 ## 👥 Authors
 - **Sadrakh Ram Loudan Saputra** - Institut Teknologi Sepuluh Nopember
