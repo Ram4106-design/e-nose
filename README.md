@@ -183,8 +183,12 @@ You can see a report in this link :
 https://drive.google.com/file/d/1iQDORXXXcKGlINf4yj-QDosfoPlXGISc/view?usp=sharing
 
 ## Documentation
-You can see full documentation on graphic in this link :
+You can see full documentation on graphic and UI in this link :
 https://drive.google.com/drive/folders/1JMfnT8XOA5uCpr5_LnS0CNYw-blEBz39?usp=sharing
+
+## Video Youtube
+You can see full documentation video in this link :
+[https://drive.google.com/drive/folders/1JMfnT8XOA5uCpr5_LnS0CNYw-blEBz39?usp=sharing](https://youtu.be/aB62kY_1prM?feature=shared)
 
 ## 👥 Authors
 - **Sadrakh Ram Loudan Saputra** - Institut Teknologi Sepuluh Nopember
